@@ -1,141 +1,142 @@
 import dayjs from "dayjs";
 
-/*************************************************
-  SNAKE GAME JavaScript
-*************************************************/
+// =============================================================
+// 1) SnakeGame Class (exported) for testable logic
+// =============================================================
+export class SnakeGame {
+  constructor(tileCount = 30, gridSize = 20) {
+    this.tileCount = tileCount;
+    this.gridSize = gridSize;
 
-// (Optional) If you want to import style here instead of <link> in index.html:
-// import "./style.css";
+    this.snakeX = 15;
+    this.snakeY = 15;
+    this.velocityX = 0;
+    this.velocityY = 0;
+    this.snakeBody = [];
+    this.snakeLength = 3;
 
+    this.foodX = 10;
+    this.foodY = 10;
+
+    this.score = 0;
+  }
+
+  updateSnake() {
+    this.snakeX += this.velocityX;
+    this.snakeY += this.velocityY;
+
+    // Wrap-around edges
+    if (this.snakeX < 0) this.snakeX = this.tileCount - 1;
+    if (this.snakeX > this.tileCount - 1) this.snakeX = 0;
+    if (this.snakeY < 0) this.snakeY = this.tileCount - 1;
+    if (this.snakeY > this.tileCount - 1) this.snakeY = 0;
+
+    // Insert new head
+    this.snakeBody.unshift({ x: this.snakeX, y: this.snakeY });
+    while (this.snakeBody.length > this.snakeLength) {
+      this.snakeBody.pop();
+    }
+
+    // Check if we ate the food
+    if (this.snakeX === this.foodX && this.snakeY === this.foodY) {
+      this.snakeLength++;
+      this.score++;
+      this.foodX = Math.floor(Math.random() * this.tileCount);
+      this.foodY = Math.floor(Math.random() * this.tileCount);
+    }
+
+    // Check collision with self
+    for (let i = 1; i < this.snakeBody.length; i++) {
+      if (this.snakeBody[i].x === this.snakeX && this.snakeBody[i].y === this.snakeY) {
+        this.resetGame();
+        break;
+      }
+    }
+  }
+
+  resetGame() {
+    this.snakeLength = 3;
+    this.score = 0;
+    this.snakeX = 15;
+    this.snakeY = 15;
+    this.velocityX = 0;
+    this.velocityY = 0;
+    this.snakeBody = [];
+  }
+
+  setVelocity(vx, vy) {
+    this.velocityX = vx;
+    this.velocityY = vy;
+  }
+}
+
+// =============================================================
+// 2) DOM & Canvas Code (same as original), using the SnakeGame
+// =============================================================
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-/* Game settings */
-const gridSize = 20;          // size of each grid cell (in pixels)
-const tileCount = 30;         // number of cells (600px / 20px = 30)
-const initialSpeed = 100;     // lower means faster updates
+const game = new SnakeGame(30, 20);
 
-/* Snake initial settings */
-let snakeX = 15;              
-let snakeY = 15;
-let velocityX = 0;
-let velocityY = 0;
-let snakeBody = [];
-let snakeLength = 3;
-
-/* Food initial position */
-let foodX = 10;
-let foodY = 10;
-
-/* Score */
-let score = 0;
-
-/* Track the start time using dayjs */
-const startTime = dayjs(); // current time
-const startTimeDisplay = document.getElementById("startTime");
-if (startTimeDisplay) {
-  startTimeDisplay.textContent = `Game started at: ${startTime.format("HH:mm:ss")}`;
+// For demonstration: show the start time using dayjs
+const startTimeEl = document.getElementById("startTime");
+const startTime = dayjs().format("HH:mm:ss");
+if (startTimeEl) {
+  startTimeEl.textContent = `Game started at: ${startTime}`;
 }
 
-/* Main game loop */
-function game() {
-  updateSnake();
+// Main loop
+function mainLoop() {
+  game.updateSnake();
   drawEverything();
-  setTimeout(game, initialSpeed);
+  setTimeout(mainLoop, 100); // lower = faster
 }
 
-/* Update snake position, check collisions */
-function updateSnake() {
-  snakeX += velocityX;
-  snakeY += velocityY;
-
-  // Wrap-around edges
-  if (snakeX < 0) snakeX = tileCount - 1;
-  if (snakeX > tileCount - 1) snakeX = 0;
-  if (snakeY < 0) snakeY = tileCount - 1;
-  if (snakeY > tileCount - 1) snakeY = 0;
-
-  // Add the new head
-  snakeBody.unshift({ x: snakeX, y: snakeY });
-  while (snakeBody.length > snakeLength) {
-    snakeBody.pop();
-  }
-
-  // Check if we ate the food
-  if (snakeX === foodX && snakeY === foodY) {
-    snakeLength++;
-    score++;
-    foodX = Math.floor(Math.random() * tileCount);
-    foodY = Math.floor(Math.random() * tileCount);
-  }
-
-  // Check for collision with self
-  for (let i = 1; i < snakeBody.length; i++) {
-    if (snakeBody[i].x === snakeX && snakeBody[i].y === snakeY) {
-      resetGame();
-      break;
-    }
-  }
-}
-
-/* Draw canvas content */
 function drawEverything() {
-  // Clear
   ctx.fillStyle = "#000";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   // Draw snake
   ctx.fillStyle = "#7fff00";
-  snakeBody.forEach(part => {
-    ctx.fillRect(part.x * gridSize, part.y * gridSize, gridSize, gridSize);
+  game.snakeBody.forEach(part => {
+    ctx.fillRect(part.x * game.gridSize, part.y * game.gridSize, game.gridSize, game.gridSize);
   });
 
   // Draw food
-  ctx.fillStyle = "#ff0000";
-  ctx.fillRect(foodX * gridSize, foodY * gridSize, gridSize, gridSize);
+  ctx.fillStyle = "red";
+  ctx.fillRect(game.foodX * game.gridSize, game.foodY * game.gridSize, game.gridSize, game.gridSize);
 
-  // Draw score
+  // Score
   ctx.fillStyle = "#fff";
   ctx.font = "20px Trebuchet MS";
-  ctx.fillText(`Score: ${score}`, 10, 25);
+  ctx.fillText(`Score: ${game.score}`, 10, 25);
 }
 
-/* Key controls */
+// Key controls
 document.addEventListener("keydown", e => {
   switch (e.key) {
     case "ArrowLeft":
-      if (velocityX === 1) return;
-      velocityX = -1;
-      velocityY = 0;
-      break;
-    case "ArrowUp":
-      if (velocityY === 1) return;
-      velocityX = 0;
-      velocityY = -1;
+      if (game.velocityX !== 1) {
+        game.setVelocity(-1, 0);
+      }
       break;
     case "ArrowRight":
-      if (velocityX === -1) return;
-      velocityX = 1;
-      velocityY = 0;
+      if (game.velocityX !== -1) {
+        game.setVelocity(1, 0);
+      }
+      break;
+    case "ArrowUp":
+      if (game.velocityY !== 1) {
+        game.setVelocity(0, -1);
+      }
       break;
     case "ArrowDown":
-      if (velocityY === -1) return;
-      velocityX = 0;
-      velocityY = 1;
+      if (game.velocityY !== -1) {
+        game.setVelocity(0, 1);
+      }
       break;
   }
 });
 
-/* Reset game */
-function resetGame() {
-  snakeLength = 3;
-  score = 0;
-  snakeX = 15;
-  snakeY = 15;
-  velocityX = 0;
-  velocityY = 0;
-  snakeBody = [];
-}
-
-/* Start the game */
-game();
+// Start the game loop
+mainLoop();

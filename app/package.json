@@ -1,9 +1,10 @@
 {
   "name": "snake-game",
   "version": "1.0.0",
-  "description": "Snake game in JavaScript",
   "scripts": {
-    "build": "webpack"
+    "build": "webpack",
+    "test": "jest",
+    "coverage": "jest --coverage"
   },
   "dependencies": {
     "dayjs": "^1.11.8"
@@ -12,6 +13,7 @@
     "webpack": "^5.76.0",
     "webpack-cli": "^5.0.1",
     "style-loader": "^3.3.1",
-    "css-loader": "^6.7.3"
+    "css-loader": "^6.7.3",
+    "jest": "^29.5.0"
   }
 }
