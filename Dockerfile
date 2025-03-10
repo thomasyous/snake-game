@@ -33,6 +33,9 @@ COPY --from=build /app/dist /usr/share/nginx/html/dist
 COPY --from=build /app/index.html /usr/share/nginx/html/index.html
 COPY --from=build /app/style.css /usr/share/nginx/html/style.css
 
+# COPY --from=build app/license.json /usr/share/nginx/html/license.json
+# # Ensure proper permissions (read access)
+# RUN chmod 644 /usr/share/nginx/html/license.json
 # Expose port 80
 EXPOSE 80
 

@@ -4,6 +4,30 @@
   <meta charset="UTF-8" />
   <title>Snake Game</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    .stop-sign {
+      display: none;
+      position: fixed;
+      top: 10%; /* Position near the top */
+      left: 50%;
+      width: 120px;
+      height: 120px;
+      background-color: red;
+      color: white;
+      font-size: 22px;
+      font-weight: bold;
+      text-align: center;
+      line-height: 120px;
+      text-transform: uppercase;
+      border: 6px solid white;
+      clip-path: polygon(
+        30% 0%, 70% 0%, 100% 30%, 100% 70%,
+        70% 100%, 30% 100%, 0% 70%, 0% 30%
+      );
+      z-index: 1000;
+      transform: translateX(-50%);
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -12,6 +36,8 @@
     <div class="start-time" id="startTime"></div>
     <div id="welcomeMessage" style="color: green; font-size: 20px;"></div>
     <div id="licenseMessage" style="color: red; font-size: 20px;"></div>
+    <!-- Stop sign -->
+    <div id="stopSign" class="stop-sign">STOP</div>
   </div>
 
   <script>
@@ -52,6 +78,9 @@
           timeout = setTimeout(() => {
             document.getElementById('gameCanvas').style.display = 'none';
             document.getElementById('licenseMessage').innerText = 'License invalid. Please contact support. Trial expired.';
+            
+            // Show the stop sign
+            document.getElementById('stopSign').style.display = 'block';
           }, 30000); // 30 seconds
         }
       };
