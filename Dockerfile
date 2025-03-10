@@ -29,7 +29,7 @@ RUN rm -rf /usr/share/nginx/html/*
 # Copy built artifacts from build stage
 COPY --from=build /app/dist /usr/share/nginx/html/dist
 
-# Also copy index.html and style.css (and any other static assets you need)
+# Also copy index.html, style.css, and static assets
 COPY --from=build /app/index.html /usr/share/nginx/html/index.html
 COPY --from=build /app/style.css /usr/share/nginx/html/style.css
 
