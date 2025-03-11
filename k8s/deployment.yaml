@@ -20,13 +20,9 @@ spec:
         app: snake-game
     spec:
       terminationGracePeriodSeconds: 30
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
-        fsGroup: 1000
       containers:
         - name: snake-game
-          image: my-snake-game:latest
+          image: npandeya/snake-app:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80
