@@ -1,6 +1,6 @@
 stages:
   - sonarqube
-  - build
+  #- build
   - sbom
   - scan
   - docker-final
